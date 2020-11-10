@@ -89,6 +89,7 @@ public class Game {
         int yo=0;
         board[next.x][next.y]='c';
         board[old.x][old.y]='0';
+
         for(int i=0; i<4; i++)
             for(int j=0; j< 4; j++)
                 if(board[i][j]=='c')

@@ -57,6 +57,7 @@ public class MinMaxFirst {
         }
 
     }
+
     public List<Move> MinMaxMovesGenerator(){
         List<Move> possibleMoves = new ArrayList<>();
         for(int i=0 ; i< 4;i++)
@@ -76,15 +77,13 @@ public class MinMaxFirst {
 
         for (Node node:posibileDinCurent) {
             if(max<getMinForLevel2(node,curent)){
+
                 max=getMinForLevel2(node,curent);
                 maxNode=node;
+
             }
         }
         return  new Move(max, curent, maxNode);
-    }
-    public Move MinMaxGetBest(List<Move> possibleMoves){
-        possibleMoves.sort(Move.bestScore);
-        return possibleMoves.get(0);
     }
 
     private int getMinForLevel2(Node node, Node parent) {
@@ -118,6 +117,11 @@ public class MinMaxFirst {
                 possible.add(next);
         }
         return possible;
+    }
+
+    public Move MinMaxGetBest(List<Move> possibleMoves){
+        possibleMoves.sort(Move.bestScore);
+        return possibleMoves.get(0);
     }
     public boolean validate(Node node){
         return node.x<4 && node.x>=0 && node.y<4 && node.y>=0 && board[node.x][node.y]=='0';

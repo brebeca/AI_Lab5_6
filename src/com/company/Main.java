@@ -3,9 +3,12 @@ import com.company.MinMax.MinMaxGame;
 public class Main {
 
     public static void main(String[] args) {
-        Game game= new Game();
+      //  Game game= new Game();
         MinMaxGame minMaxGame= new MinMaxGame();
-        minMaxGame.start();
+      //  minMaxGame.startAlfaBeta();
+        minMaxGame.startMinMAx();
+      //  MinMaxFirst minMaxFirst= new MinMaxFirst();
+        //minMaxFirst.MinMaxstart();
 
     }
 

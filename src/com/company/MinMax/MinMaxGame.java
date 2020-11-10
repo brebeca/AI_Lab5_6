@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MinMaxGame extends Game {
-    public void start(){
+    public void startMinMAx(){
         printBoard();
         Scanner myObj = new Scanner(System.in);
         while(!isFinal()){
@@ -23,52 +23,118 @@ public class MinMaxGame extends Game {
         }
     }
 
+    public void startAlfaBeta(){
+        printBoard();
+        Scanner myObj = new Scanner(System.in);
+        while(!isFinal()){
+            String nrPiesa = myObj.nextLine();
+            String i = myObj.nextLine();
+            String j = myObj.nextLine();
+            makeMove(Integer.parseInt(i),Integer.parseInt(j),nrPiesa.charAt(0));
+
+            Move movePC= getBestAlfaBeta();
+            makeMoveComputer(movePC.next, movePC.piesa);
+
+            printBoard();
+        }
+    }
+    public Move getBestAlfaBeta(){
+        List<Tree> trees= constructMinMaxTrees(2);
+        int max = 0;
+        Move bestMove=null;
+        for (Tree tree: trees) {
+            Move currentMove=alfaBetaAlg(tree.position,tree,2,-9999,9999,"max");
+            if(currentMove.scor>=max)
+            {
+                max=currentMove.scor;
+                bestMove=currentMove;
+            }
+        }
+        return bestMove;
+    }
+
     public Move getBest(){
         List<Tree> trees= constructMinMaxTrees(2);
         int max = 0;
-        Node pizitiePiesaScorMAx=null;
+        Move bestMove=null;
         for (Tree tree: trees) {
-            int scor=minMaxAlg(tree.position,tree,2,-9999,9999,"max");
-            if(scor>=max)
+            Move currentMove=minMaxAlg(tree.position,tree,2,-9999,9999,"max");
+            if(currentMove.scor>=max)
             {
-                max=scor;
-                pizitiePiesaScorMAx=tree.position;
+                max=currentMove.scor;
+                bestMove=currentMove;
             }
         }
-        return new Move(max,pizitiePiesaScorMAx,best);
+        return bestMove;
     }
-    public Node best;
-
-    public  int minMaxAlg(Node root, Tree current, int depth,int alpha,int beta, String lookFor)
+    public  Move alfaBetaAlg(Node root, Tree current, int depth,int alpha,int beta, String lookFor)
     {
         if(depth==0)
-            return  evaluate(current.position,root);
+            return new Move( evaluate(current.position,root), current.position,null);
 
+        Node best=null;
         if(lookFor.contains("max"))
         {
             int max=-1;
             for (Tree child : current.children) {
-                int eval= minMaxAlg(root, child, depth-1,alpha, beta,"min");
-              if(max<eval){
-                  max=eval;
-                  best=child.position;
-              }
-              alpha=Math.max(max,alpha);
-              if(beta<=alpha)
-                  break;
+                int eval= minMaxAlg(root, child, depth-1,alpha, beta,"min").scor;
+                if(max<eval){
+                    max=eval;
+                    best=child.position;
+                }
+                alpha=Math.max(max,alpha);
+                if(beta<=alpha)
+                    break;
             }
-            return  max;
+            return  new Move(max, current.position, best);
         }
         else {
             int min=9999;
             for (Tree child: current.children) {
-                int eval= minMaxAlg(root, child, depth-1,alpha, beta,"max");
+                int eval= minMaxAlg(root, child, depth-1,alpha, beta,"max").scor;
                 min=Math.min(eval, min);
+                if(min>eval){
+                    min=eval;
+                    best=child.position;
+                }
                 beta=Math.min(beta,min);
                 if(beta<=alpha)
                     break;
             }
-            return min;
+            return new Move(min, current.position, best);
+        }
+    }
+
+
+    public  Move minMaxAlg(Node root, Tree current, int depth,int alpha,int beta, String lookFor)
+    {
+        if(depth==0)
+            return new Move( evaluate(current.position,root), current.position,null);
+
+        Node best=null;
+        if(lookFor.contains("max"))
+        {
+            int max=-1;
+            for (Tree child : current.children) {
+                  int eval= minMaxAlg(root, child, depth-1,alpha, beta,"min").scor;
+                  if(max<eval){
+                      max=eval;
+                      best=child.position;
+                  }
+            }
+            return  new Move(max, current.position, best);
+        }
+        else {
+            int min=9999;
+            for (Tree child: current.children) {
+                int eval= minMaxAlg(root, child, depth-1,alpha, beta,"max").scor;
+                min=Math.min(eval, min);
+                if(min>eval){
+                    min=eval;
+                    best=child.position;
+                }
+            }
+            return new Move(min, current.position, best);
         }
     }
 
@@ -108,6 +174,20 @@ public class MinMaxGame extends Game {
             System.out.println();
         }
         printBoard();
+    }
+    public int evaluate2(){
+        int yc=0;
+        int yo=0;
+
+        for(int i=0; i<4; i++)
+            for(int j=0; j< 4; j++)
+                if(board[i][j]=='c')
+                    yc+=i+1;
+                else
+                if(board[i][j]=='o')
+                    yo+=i+1;
+
+        return 12- yc-yo;
     }
 
 

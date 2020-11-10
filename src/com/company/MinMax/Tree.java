@@ -6,8 +6,8 @@ import java.util.List;
 public class Tree {
     Node  position;
     List<Tree> children;
-    Tree(Node node, List<Tree> nodeList)
-    {
+
+    Tree(Node node, List<Tree> nodeList) {
         this.position=node;
         this.children=nodeList;
     }
