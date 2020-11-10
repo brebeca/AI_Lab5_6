@@ -4,11 +4,12 @@ import java.util.*;
 public class Game {
 
     public char[][] board;
-    private final int[] moveX = {-1, -1,  0, 1, 1,  1,   0, -1};
-    private final int[] moveY = {0,   1,  1, 1, 0, -1,  -1, -1};
+    public int[] moveX ;
+    public int[] moveY ;
 
-    Game()
+    public Game()
     {
+        super();
         board= new char[4][4];
         for(int i=1 ; i< 3;i++)
             for(int j=0; j< 4; j++)
@@ -19,6 +20,23 @@ public class Game {
             board[0][i]='c';
             board[3][i]=(char)(i+48+1);
         }
+        moveX = new int[]{-1, -1, 0, 1, 1, 1, 0, -1};
+        moveY = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
+    }
+
+    public boolean isFinal(){
+        boolean okCalculator= true;
+        boolean okOm=true;
+        for(int i=0;i< 4; i++){
+            {
+                if (board[0][i] != '1'&&board[0][i] != '2'&&board[0][i] != '3'&&board[0][i] != '4') //daca pe linia 0 a ajuns omul cu toate piesele lui
+                    okOm = false;
+                if (board[3][i] != 'c') // daca pe linia 4 a ajuns calculatorul cu toate piesele lui
+                    okCalculator = false;
+
+            }
+        }
+        return  okCalculator || okCalculator;
     }
 
     public List<Mutare> possibleMovesGenerator(){
@@ -43,6 +61,10 @@ public class Game {
         return possible;
     }
 
+    public boolean validate(Node node){
+        return node.x<4 && node.x>=0 && node.y<4 && node.y>=0 && board[node.x][node.y]=='0';
+    }
+
     public void printBoard(){
         for(int i=0 ; i< 4;i++) {
             for (int j = 0; j < 4; j++) {
@@ -54,31 +76,6 @@ public class Game {
 
     }
 
-    public boolean isFinal(){
-        boolean okCalculator= true;
-        boolean okOm=true;
-        for(int i=0;i< 4; i++){
-            {
-                if (board[0][i] != 'o') //daca pe linia 0 a ajuns omul cu toate piesele lui
-                    okOm = false;
-                if (board[3][i] != 'c') // daca pe linia 4 a ajuns calculatorul cu toate piesele lui
-                    okCalculator = false;
-
-            }
-        }
-        return  okCalculator || okCalculator;
-    }
-
-    public void start(){
-        printBoard();
-        Scanner myObj = new Scanner(System.in);
-        String nrPiesa = myObj.nextLine();
-        String i = myObj.nextLine();
-        String j = myObj.nextLine();
-        makeMove(Integer.parseInt(i),Integer.parseInt(j),nrPiesa.charAt(0));
-        printBoard();
-    }
-
     public void makeMove(int i, int j, char piesa){
         for(int ii=0; ii<4; ii++)
             for(int jj=0; jj< 4; jj++)
@@ -87,10 +84,10 @@ public class Game {
         board[i][j]=piesa;
     }
 
-    public int evaluate(Node node, Node old){
+    public int evaluate(Node next, Node old){
         int yc=0;
         int yo=0;
-        board[node.x][node.y]='c';
+        board[next.x][next.y]='c';
         board[old.x][old.y]='0';
         for(int i=0; i<4; i++)
             for(int j=0; j< 4; j++)
@@ -100,35 +97,18 @@ public class Game {
                     if(board[i][j]=='o')
                         yo+=i+1;
 
-        board[node.x][node.y]='0';
+        board[next.x][next.y]='0';
         board[old.x][old.y]='c';
         return 12- yc-yo;
     }
 
-    public Move getBest(List<Mutare> mutari){
-        int maxi=0;
-        Node maxPiesa=null;
-        Node maxNext=null;
-        for (Mutare mutare:mutari) {
-            for (Node node:mutare.possibleMoves) {
-                if(maxi< evaluate(node,mutare.piesa)) {
-                    maxi = evaluate(node, mutare.piesa);
-                    maxPiesa=mutare.piesa;
-                    maxNext=node;
-                }
-            }
-        }
-        return new Move(maxi,maxPiesa,maxNext);
-    }
 
 
 
 
 
 
-
-
-    private void makeMoveComputer(Node bestMove, Node oldMove) {
+    public void makeMoveComputer(Node bestMove, Node oldMove) {
         board[bestMove.x][bestMove.y]='c';
         board[oldMove.x][oldMove.y]='0';
     }
@@ -160,8 +140,6 @@ public class Game {
         }
         return possibleMoves;
     }
-    public boolean validate(Node node){
-        return node.x<4 && node.x>=0 && node.y<4 && node.y>=0 && board[node.x][node.y]=='0';
-    }
+
 
 }
